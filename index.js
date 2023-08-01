@@ -63,15 +63,16 @@ function renderWeather(city, weather) {
     currentContainer.append(card);
 }
 
+// Function for creating the forecast cards
 function forecastCard(forecast) {
-    // variables for data from api
+    // Creating variables for the api request data
     let iconUrl = `https://openweathermap.org/img/w/${forecast.weather[0].icon}.png`;
     let iconDescription = forecast.weather[0].description;
     let temperature = forecast.main.temp;
     let humidity = forecast.main.humidity;
     let winds = forecast.wind.speed;
 
-    // Create elements for a card
+    // Create the elements for the card
     let column = document.createElement('div');
     let card = document.createElement('div');
     let body = document.createElement('div');
@@ -81,10 +82,12 @@ function forecastCard(forecast) {
     let wind = document.createElement('p');
     let humidityEl = document.createElement('p');
 
+    // Adds the elements to the card, column, and the body elements
     column.append(card);
     card.append(body);
     body.append(title, weatherIcon, temp, wind, humidityEl);
 
+    // sets attributes for the created elements
     column.setAttribute('class', 'col-md');
     column.classList.add('five-day-card');
     card.setAttribute('class', 'card bg-primary h-100 text-white');
@@ -94,7 +97,7 @@ function forecastCard(forecast) {
     wind.setAttribute('class', 'card-text');
     humidityEl.setAttribute('class', 'card-text');
 
-    // Add content to elements
+    // Adds content to the created elements
     title.textContent = dayjs(forecast.dt_txt).format('M/D/YYYY');
     weatherIcon.setAttribute('src', iconUrl);
     weatherIcon.setAttribute('alt', iconDescription);
@@ -102,8 +105,44 @@ function forecastCard(forecast) {
     wind.textContent = `Wind: ${winds} MPH`;
     humidityEl.textContent = `Humidity is at ${humidity}%`;
 
+    // adds the column to the forecast container
     forecastContainer.append(col);
 }
+
+function forecast(dayForecast) {
+    // Create a time range for the forecast
+    let startDt = dayjs().add(1, 'day').startOf('day').unix();
+    let endDt = dayjs().add(6, 'day').startOf('day').unix();
+
+    // Creating headers and the header column
+    let header = document.createElement('h4');
+    let headerColumn = document.createElement('div');
+
+    // Setting attributes for the column and the header
+    headerColumn.setAttribute('class', 'col-12');
+    header.textContent = '5-Day Forecast:';
+
+    // Adding the header to the column
+    headerColumn.append(header);
+
+    // Getting rid of the previous search results and adding the new forecast ressults
+    forecastContainer.innerHTML = '';
+    forecastContainer.append(headerColumn);
+
+    // Loop for creating and adding each forecast card
+    for (var i = 0; i < dayForecast.length; i++) {
+
+        // Loops through all the data and returns the data for the days that fall within the range set above (5 days)
+        if (dayForecast[i].dt >= startDt && dailyForecast[i].dt < endDt) {
+
+            // This filters through the data and returns only the data for noon on each day
+            if (dayForecast[i].dt_txt.slice(11, 13) == "12") {
+                forecastCard(dayForecast[i]);
+            }
+        }
+    }
+}
+
 
 // Function for when the user submits the city
 function handleSearchSubmit() {
