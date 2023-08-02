@@ -1,14 +1,14 @@
 // Setting the constant api variables && search history variable
 let history = [];
 let apiKey = `a145f8e44dde584518f485491c3469d3`;
-let apiUrl = `https://api.openweathermap.org`;
+let apiUrl = 'https://api.openweathermap.org';
 
 // Getting the html elements
 let searchDiv = document.querySelector('#search-div');
 let searchBar = document.querySelector('#search-bar');
 let currentContainer = document.querySelector('#today');
-let forcastCNont = document.querySelector('#forecast');
-let historyContnainer = document.querySelector('#search-history');
+let forecastContainer = document.querySelector('#forecast');
+let historyContainer = document.querySelector('#search-history');
 
 // Time plugins
 dayjs.extend(window.dayjs_plugin_utc);
@@ -53,7 +53,7 @@ function renderWeather(city, weather) {
     header.append(weatherIcon);
     temp.textContent = `Temp: ${temperature}°F`;
     wind.textContent = `Wind: ${winds} MPH`;
-    humidityEl.textContent = `Humidity is at ${humidity}%`;
+    humidityElement.textContent = `Humidity is at ${humidity}%`;
     // Adding all the elements to the card body
     body.append(header, temp, wind, humidityElement);
 
@@ -106,7 +106,7 @@ function forecastCard(forecast) {
     humidityEl.textContent = `Humidity is at ${humidity}%`;
 
     // adds the column to the forecast container
-    forecastContainer.append(col);
+    forecastContainer.append(column);
 }
 
 // renders the forecast for the next 5 days
@@ -134,7 +134,7 @@ function forecast(dayForecast) {
     for (var i = 0; i < dayForecast.length; i++) {
 
         // Loops through all the data and returns the data for the days that fall within the range set above (5 days)
-        if (dayForecast[i].dt >= startDt && dailyForecast[i].dt < endDt) {
+        if (dayForecast[i].dt >= startDt && dayForecast[i].dt < endDt) {
 
             // This filters through the data and returns only the data for noon on each day
             if (dayForecast[i].dt_txt.slice(11, 13) == "12") {
@@ -147,15 +147,16 @@ function forecast(dayForecast) {
 //function for fetching the weather data
 function getWeather(location) {
     // creating variables for 
-    var { latitude } = location;
-    var { longitude } = location;
+    console.log(location);
+    var { lat } = location;
+    var { lon } = location;
     var city = location.name;
 
     // connecting the api url to get the data from the city that was inputed
-    var apiUrl = `${weatherApiRootUrl}/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=imperial&appid=${weatherApiKey}`;
+    var cityapiUrl = `${apiUrl}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
 
     // fetch request 
-    fetch(apiUrl)
+    fetch(cityapiUrl)
         // returns json of data
         .then(function (res) {
             return res.json();
@@ -172,10 +173,10 @@ function getWeather(location) {
 
 function getCoordinates(search) {
     // Sets the api url for the get request
-    var apiUrl = `${weatherApiRootUrl}/geo/1.0/direct?q=${search}&limit=5&appid=${weatherApiKey}`;
+    var cityapiUrl = `${apiUrl}/geo/1.0/direct?q=${search}&limit=5&appid=${apiKey}`;
 
     // fetch request 
-    fetch(apiUrl)
+    fetch(cityapiUrl)
         // returns json of data
         .then(function (res) {
             return res.json();
@@ -197,6 +198,44 @@ function getCoordinates(search) {
         });
 }
 
+function renderSearchHistory() {
+    historyContainer.innerHTML = '';
+  
+    // Start at end of history array and count down to show the most recent at the top.
+    for (var i = history.length - 1; i >= 0; i--) {
+      var btn = document.createElement('button');
+      btn.setAttribute('type', 'button');
+      btn.setAttribute('aria-controls', 'today forecast');
+      btn.classList.add('history-btn', 'btn-history');
+  
+      // `data-search` allows access to city name when click handler is invoked
+      btn.setAttribute('data-search', history[i]);
+      btn.textContent = history[i];
+      historyContainer.append(btn);
+    }
+  }
+  
+  // Function to update history in local storage then updates displayed history.
+  function addToHistory(search) {
+    // If there is no search term return the function
+    if (history.indexOf(search) !== -1) {
+      return;
+    }
+    history.push(search);
+  
+    localStorage.setItem('search-history', JSON.stringify(history));
+    renderSearchHistory();
+  }
+  
+  // Function to get search history from local storage
+  function initSearchHistory() {
+    var storedHistory = localStorage.getItem('search-history');
+    if (storedHistory) {
+      history = JSON.parse(storedHistory);
+    }
+    renderSearchHistory();
+  }
+
 // renders the items fo the page by calling the renderWeather and forecast functions
 function renderItems(city, data) {
     renderWeather(city, data.list[0], data.city.timezone);
@@ -205,7 +244,7 @@ function renderItems(city, data) {
 
 // Function for when the user submits the city
 function handleSearchSubmit(e) {
-    if (!searchInput.value) {
+    if (!searchBar.value) {
         return;
     }
 
@@ -213,10 +252,11 @@ function handleSearchSubmit(e) {
     e.preventDefault();
 
     //Gets the search value from the page
-    var search = searchInput.value.trim();
+    let search = searchBar.value.trim();
+    console.log(search);
     // Runs the getCoordinates function and resets the input field
     getCoordinates(search);
-    searchInput.value = '';
+    searchBar.value = '';
 }
 
 function historyClick(e) {
@@ -225,12 +265,14 @@ function historyClick(e) {
         return;
     }
 
+    e.preventDefault();
     // Gets the target of the click and runs the fetch process using the buttons 'data-search' attribute
     var btn = e.target;
     var search = btn.getAttribute('data-search');
-    fetchCoords(search);
+    getCoordinates(search);
 }
 
+renderSearchHistory()
 // Listening for the submit button or the enter key and for a history button to be clicked
 searchDiv.addEventListener('submit', handleSearchSubmit);
-historyContainer.addEventListener('click', handleSearchHistoryClick);
+historyContainer.addEventListener('click', historyClick);
