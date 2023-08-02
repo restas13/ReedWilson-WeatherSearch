@@ -187,7 +187,8 @@ function getCoordinates(search) {
                 alert('Sorry, we couldn\'t find the city you put in, please check the spelling and try again.');
             } else {
                 // Adds the search to the localstorage, and gets the weather
-                
+                addToHistory(search);
+                getWeather(data[0]);
             }
         })
         // Runs if there was an error with the request
@@ -218,5 +219,18 @@ function handleSearchSubmit(e) {
     searchInput.value = '';
 }
 
-// Listening for the submit button or the enter key
+function historyClick(e) {
+    // Don't do search if current elements is not a search history button
+    if (!e.target.matches('.btn-history')) {
+        return;
+    }
+
+    // Gets the target of the click and runs the fetch process using the buttons 'data-search' attribute
+    var btn = e.target;
+    var search = btn.getAttribute('data-search');
+    fetchCoords(search);
+}
+
+// Listening for the submit button or the enter key and for a history button to be clicked
 searchDiv.addEventListener('submit', handleSearchSubmit);
+historyContainer.addEventListener('click', handleSearchHistoryClick);
