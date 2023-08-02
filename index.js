@@ -109,6 +109,7 @@ function forecastCard(forecast) {
     forecastContainer.append(col);
 }
 
+// renders the forecast for the next 5 days
 function forecast(dayForecast) {
     // Create a time range for the forecast
     let startDt = dayjs().add(1, 'day').startOf('day').unix();
@@ -143,6 +144,37 @@ function forecast(dayForecast) {
     }
 }
 
+//function for fetching the weather data
+function getWeather(location) {
+    // creating variables for 
+    var { latitude } = location;
+    var { longitude } = location;
+    var city = location.name;
+
+    // connecting the api url to get the data from the city that was inputed
+    var apiUrl = `${weatherApiRootUrl}/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=imperial&appid=${weatherApiKey}`;
+
+    // fetch request 
+    fetch(apiUrl)
+        // returns json of data
+        .then(function (res) {
+            return res.json();
+        })
+        //calls renderItems function and passes the city and data json 
+        .then(function (data) {
+            renderItems(city, data);
+        })
+        // Catches in case of an error
+        .catch(function (err) {
+            console.error(err);
+        });
+}
+
+// renders the items fo the page by calling the renderWeather and forecast functions
+function renderItems(city, data) {
+    renderWeather(city, data.list[0], data.city.timezone);
+    forecast(data.list);
+}
 
 // Function for when the user submits the city
 function handleSearchSubmit() {
