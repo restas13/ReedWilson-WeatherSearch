@@ -170,6 +170,32 @@ function getWeather(location) {
         });
 }
 
+function getCoordinates(search) {
+    // Sets the api url for the get request
+    var apiUrl = `${weatherApiRootUrl}/geo/1.0/direct?q=${search}&limit=5&appid=${weatherApiKey}`;
+
+    // fetch request 
+    fetch(apiUrl)
+        // returns json of data
+        .then(function (res) {
+            return res.json();
+        })
+        //checks if there was any data returned 
+        .then(function (data) {
+            if (!data[0]) {
+                // Alerts the user if the city they input was invalid
+                alert('Sorry, we couldn\'t find the city you put in, please check the spelling and try again.');
+            } else {
+                // Adds the search to the localstorage, and gets the weather
+                
+            }
+        })
+        // Runs if there was an error with the request
+        .catch(function (err) {
+            console.error(err);
+        });
+}
+
 // renders the items fo the page by calling the renderWeather and forecast functions
 function renderItems(city, data) {
     renderWeather(city, data.list[0], data.city.timezone);
@@ -177,8 +203,19 @@ function renderItems(city, data) {
 }
 
 // Function for when the user submits the city
-function handleSearchSubmit() {
+function handleSearchSubmit(e) {
+    if (!searchInput.value) {
+        return;
+    }
 
+    // prevents the page from reloading
+    e.preventDefault();
+
+    //Gets the search value from the page
+    var search = searchInput.value.trim();
+    // Runs the getCoordinates function and resets the input field
+    getCoordinates(search);
+    searchInput.value = '';
 }
 
 // Listening for the submit button or the enter key
