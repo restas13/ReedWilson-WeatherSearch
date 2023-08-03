@@ -12,6 +12,10 @@ let apiKey = 'a145f8e44dde584518f485491c3469d3';
 // History container
 let searchHistory = [];
 
+//Timezone plugins
+dayjs.extend(window.dayjs_plugin_utc);
+dayjs.extend(window.dayjs_plugin_timezone);
+
 function fetchLocation(search) {
     var url = `${apiRoot}/geo/1.0/direct?q=${search}&limit=5&appid=${apiKey}`;
 
@@ -39,6 +43,7 @@ function getWeather(location) {
             return response.json();
         }).then((data) => {
             renderToday(city, data.list[0])
+            renderForecast(city, data.list);
         }).catch((error) => {
             console.log(error);
         });
@@ -53,6 +58,34 @@ function renderToday(city, weather) {
 
     createCard(city, temperature, winds, humid, 'today');
 
+}
+
+function renderForecast(city, data) {
+    const start = dayjs().add(1, 'day').startOf('day').unix();
+    const end = dayjs().add(6, 'day').startOf('day').unix();
+
+    let headerCont = document.createElement('div');
+    let header = document.createElement('h4');
+
+    header.textContent = 'Five Day Forecast: ';
+
+    headerCont.append(header);
+
+
+    for (let i = 1; i < data.length; i++) {
+        if (data[i].dt >= start && data[i].dt < end) {
+            if (data[i].dt_txt.slice(11, 13) == "12") {
+                const temperature = data[i].main.temp;
+                const winds = data[i].wind.speed;
+                const humid = data[i].main.humidity;
+
+                headerCont.append(createCard(city, temperature, winds, humid, 'forecast'));
+
+            }
+        }
+    }
+
+    forecastCont.append(headerCont);
 }
 
 function createCard(city, temperature, winds, humid, type) {
@@ -76,6 +109,16 @@ function createCard(city, temperature, winds, humid, type) {
 
         todaysWeather.innerHTML = '';
         todaysWeather.append(card);
+    }else if (type == 'forecast') {
+        header.textContent = city;
+        temp.textContent = `Temperature: ${temperature}`;
+        wind.textContent = `Wind: ${winds}`;
+        humidity.textContent = `Humidity: ${humid}`;
+        cardBody.append(temp, wind, humidity);
+
+        card.append(header, cardBody);
+
+        return card;
     }
 }
 
