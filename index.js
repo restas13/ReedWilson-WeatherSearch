@@ -44,6 +44,7 @@ function getWeather(location) {
         }).then((data) => {
             renderToday(city, data.list[0])
             renderForecast(city, data.list);
+            addToHistory(city);
         }).catch((error) => {
             console.log(error);
         });
@@ -56,11 +57,14 @@ function renderToday(city, weather) {
     const winds = weather.wind.speed;
     const humid = weather.main.humidity;
 
-    createCard(city, temperature, winds, humid, 'today');
+    createCard(city, temperature, winds, humid, 'today', dayjs(weather.dt_txt).format('M/D/YYYY'));
 
 }
 
 function renderForecast(city, data) {
+    forecastCont.innerHTML = '';
+
+
     const start = dayjs().add(1, 'day').startOf('day').unix();
     const end = dayjs().add(6, 'day').startOf('day').unix();
 
@@ -79,7 +83,7 @@ function renderForecast(city, data) {
                 const winds = data[i].wind.speed;
                 const humid = data[i].main.humidity;
 
-                headerCont.append(createCard(city, temperature, winds, humid, 'forecast'));
+                headerCont.append(createCard(city, temperature, winds, humid, 'forecast', dayjs(data[i].dt_txt).format('M/D/YYYY')));
 
             }
         }
@@ -88,7 +92,7 @@ function renderForecast(city, data) {
     forecastCont.append(headerCont);
 }
 
-function createCard(city, temperature, winds, humid, type) {
+function createCard(city, temperature, winds, humid, type, date) {
     let card = document.createElement('div');
     let cardBody = document.createElement('div');
     let header = document.createElement('h2');
@@ -99,7 +103,7 @@ function createCard(city, temperature, winds, humid, type) {
     if (type == 'today') {
         console.log('todays forecast');
 
-        header.textContent = city;
+        header.textContent = city + '-' + date;
         temp.textContent = `Temperature: ${temperature}`;
         wind.textContent = `Wind: ${winds}`;
         humidity.textContent = `Humidity: ${humid}`;
@@ -110,7 +114,7 @@ function createCard(city, temperature, winds, humid, type) {
         todaysWeather.innerHTML = '';
         todaysWeather.append(card);
     }else if (type == 'forecast') {
-        header.textContent = city;
+        header.textContent = city + '-' + date;
         temp.textContent = `Temperature: ${temperature}`;
         wind.textContent = `Wind: ${winds}`;
         humidity.textContent = `Humidity: ${humid}`;
@@ -120,6 +124,16 @@ function createCard(city, temperature, winds, humid, type) {
 
         return card;
     }
+}
+
+function addToHistory(search) {
+    if (searchHistory.indexOf(search) !== -1) {
+        console.log("already Have it");
+        return;
+    }
+
+    searchHistory.push(search);
+    localStorage.setItem('history', JSON.stringify(searchHistory));
 }
 
 function handleSubmit(event) {
