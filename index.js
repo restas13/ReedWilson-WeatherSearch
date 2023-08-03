@@ -15,18 +15,29 @@ let searchHistory = [];
 function fetchLocation(search) {
     var url = `${apiRoot}/geo/1.0/direct?q=${search}&limit=5&appid=${apiKey}`;
 
-    fetch(url).then(function (response) {
+    fetch(url).then((response) => {
         return response.json();
-    }).then(function (data) {
+    }).then((data)  => {
         if(data[0]) {
             console.log(data[0]);
             getWeather(data[0]);
         }
-    }).catch( function (error) {
+    }).catch((error) => {
         console.log(error);
     })
 }
 
 function getWeather(location) {
+    const {lon} = location;
+    const {lat} = location;
+
+    fetch(`${apiRoot}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
+    .then((response) => {
+        return response.json();
+    }).then((data) => {
+
+    }).catch((error) => {
+        console.log(error);
+    });
 
 }
