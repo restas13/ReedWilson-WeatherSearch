@@ -3,7 +3,7 @@ const input = document.querySelector('#Weather-Input');
 const historyCont = document.querySelector('#button-history');
 const todaysWeather = document.querySelector('#Today-cont');
 const forecastCont = document.querySelector('#forecast-cont');
-const searchCont = document.querySelector('#search-cont');
+const searchCont = document.querySelector('#button-history');
 
 // api variables
 let apiRoot = 'https://api.openweathermap.org';
@@ -134,6 +134,19 @@ function addToHistory(search) {
 
     searchHistory.push(search);
     localStorage.setItem('history', JSON.stringify(searchHistory));
+    renderHistory();
+}
+
+function renderHistory() {
+    searchCont.innerHTML = '';
+
+    for (let i = 0; i < searchHistory.length; i++) {
+        let button = document.createElement('button');
+
+        button.setAttribute('search', searchHistory[i]);
+        button.textContent = searchHistory[i];
+        searchCont.append(button);
+    }
 }
 
 function handleSubmit(event) {
