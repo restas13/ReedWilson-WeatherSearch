@@ -149,6 +149,15 @@ function renderHistory() {
     }
 }
 
+function initializeHistory(){
+    let storage = localStorage.getItem('history');
+    if (storage) {
+        searchHistory = JSON.parse(storage);
+    }
+
+    renderHistory();
+}
+
 function handleSubmit(event) {
     if (!input.value) {
         console.log('bug');
@@ -160,5 +169,6 @@ function handleSubmit(event) {
     fetchLocation(search);
 }
 
+initializeHistory();
 
 document.querySelector('#Submit-btn').addEventListener('click', handleSubmit);
