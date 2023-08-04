@@ -1,0 +1,32 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+button {
+  background-color: blue;
+  color: white;
+}
+
+.history-button {
+  width: 100px;
+  display: block;
+  margin: 5px;
+}
+
+.forecast-card {
+  display: inline-table;
+  background-color: #cccccc;
+  border-style: solid;
+  border-color: black;
+  margin: 3px;
+}
+
+.today-card {
+  display: inline-table;
+  background-color: #cccccc;
+  border-style: solid;
+  border-color: black;
+  margin: 3px;
+}

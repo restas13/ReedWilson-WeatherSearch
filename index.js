@@ -109,6 +109,7 @@ function createCard(city, temperature, winds, humid, type, date) {
         humidity.textContent = `Humidity: ${humid}`;
         cardBody.append(temp, wind, humidity);
 
+        card.setAttribute('class', 'today-card');
         card.append(header, cardBody);
 
         todaysWeather.innerHTML = '';
@@ -120,6 +121,7 @@ function createCard(city, temperature, winds, humid, type, date) {
         humidity.textContent = `Humidity: ${humid}`;
         cardBody.append(temp, wind, humidity);
 
+        card.setAttribute('class', 'forecast-card');
         card.append(header, cardBody);
 
         return card;
@@ -144,6 +146,8 @@ function renderHistory() {
         let button = document.createElement('button');
 
         button.setAttribute('search', searchHistory[i]);
+        button.setAttribute('class', 'history-button');
+
         button.textContent = searchHistory[i];
         searchCont.append(button);
     }
