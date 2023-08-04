@@ -169,6 +169,14 @@ function handleSubmit(event) {
     fetchLocation(search);
 }
 
+function handleHistorySearch(event) {
+    event.preventDefault();
+
+    let search = event.target.getAttribute('search');
+    fetchLocation(search);
+}
+
 initializeHistory();
 
+historyCont.addEventListener('click', handleHistorySearch);
 document.querySelector('#Submit-btn').addEventListener('click', handleSubmit);
